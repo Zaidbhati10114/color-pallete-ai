@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { cn } from "../lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Column } from "@/components/ui/column";
+import Footer from "@/components/footer";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,8 +20,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn("selection:bg-secondary", inter.className)}>
+        <ThemeProvider attribute="class" defaultTheme="black" enableSystem>
+          <Column className="w-full p-4 pb-0 items-center min-h-screen">
+            <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col items-center">
+              {children}
+            </div>
+            <Footer />
+            <Toaster />
+          </Column>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
