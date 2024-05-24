@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { Skeleton } from "./ui/skeleton";
+import toast from "react-hot-toast";
+import { Hint } from "./ui/hint";
 
 interface SingleCardProps {
   pallete: { id: string; colors: string[] };
@@ -17,6 +19,11 @@ const SingleCard: React.FC<SingleCardProps> = ({ pallete }) => {
     setActiveHex(null);
   };
 
+  function handleCopy(hexValue: string) {
+    navigator.clipboard.writeText(hexValue);
+    toast.success("Copied to clipboard");
+  }
+
   return (
     <div className="w-[250px] h-[200px] box-content rounded relative">
       <div className="grid grid-cols-1 rounded-t-lg text-white">
@@ -27,9 +34,20 @@ const SingleCard: React.FC<SingleCardProps> = ({ pallete }) => {
           onMouseLeave={handleMouseLeave}
         >
           {activeHex === pallete?.colors[0] && (
-            <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium">
-              {pallete?.colors[0]}
-            </p>
+            <Hint
+              label="Click to copy"
+              side="top"
+              align="center"
+              sideOffset={10}
+              alignOffset={10}
+            >
+              <p
+                onClick={() => handleCopy(pallete?.colors[0])}
+                className="absolute top-1/2 left-1/2 transform cursor-pointer -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium"
+              >
+                {pallete?.colors[0]}
+              </p>
+            </Hint>
           )}
         </div>
 
@@ -40,9 +58,20 @@ const SingleCard: React.FC<SingleCardProps> = ({ pallete }) => {
           onMouseLeave={handleMouseLeave}
         >
           {activeHex === pallete?.colors[1] && (
-            <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium">
-              {pallete?.colors[1]}
-            </p>
+            <Hint
+              label="Click to copy"
+              side="top"
+              align="center"
+              sideOffset={10}
+              alignOffset={10}
+            >
+              <p
+                onClick={() => handleCopy(pallete?.colors[1])}
+                className="absolute cursor-pointer top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium"
+              >
+                {pallete?.colors[1]}
+              </p>
+            </Hint>
           )}
         </div>
 
@@ -53,9 +82,20 @@ const SingleCard: React.FC<SingleCardProps> = ({ pallete }) => {
           onMouseLeave={handleMouseLeave}
         >
           {activeHex === pallete?.colors[2] && (
-            <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium">
-              {pallete?.colors[2]}
-            </p>
+            <Hint
+              label="Click to copy"
+              side="top"
+              align="center"
+              sideOffset={10}
+              alignOffset={10}
+            >
+              <p
+                onClick={() => handleCopy(pallete?.colors[2])}
+                className="absolute  cursor-pointer top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium"
+              >
+                {pallete?.colors[2]}
+              </p>
+            </Hint>
           )}
         </div>
 
@@ -66,9 +106,20 @@ const SingleCard: React.FC<SingleCardProps> = ({ pallete }) => {
           onMouseLeave={handleMouseLeave}
         >
           {activeHex === pallete?.colors[3] && (
-            <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium">
-              {pallete?.colors[3]}
-            </p>
+            <Hint
+              label="Click to copy"
+              side="top"
+              align="center"
+              sideOffset={10}
+              alignOffset={10}
+            >
+              <p
+                onClick={() => handleCopy(pallete?.colors[3])}
+                className="absolute cursor-pointer top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black transition duration-300 delay-400 ease-in-out font-medium"
+              >
+                {pallete?.colors[3]}
+              </p>
+            </Hint>
           )}
         </div>
       </div>
@@ -90,3 +141,11 @@ export const CardSkeleton = () => {
     </div>
   );
 };
+
+<Hint
+  label="Click to copy"
+  side="top"
+  align="center"
+  sideOffset={10}
+  alignOffset={10}
+></Hint>;
