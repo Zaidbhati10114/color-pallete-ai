@@ -1,10 +1,10 @@
 import Playground from "@/components/Playground";
-import { Step } from "@/components/step";
 import { Button } from "@/components/ui/button";
 import { Column } from "@/components/ui/column";
 import { Row } from "@/components/ui/row";
 import { H1, H2, H3, H4, P, Span } from "@/components/ui/typography";
 import { Github, List } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function Home() {
@@ -22,10 +22,15 @@ export default function Home() {
       </P>
       <p>10,000 Color Palettes generated so far.</p>
       <Row className="gap-2 mt-4">
-        <Button variant={"outline"}>
-          <Github className="w-5 h-5 mr-1" />
-          Star on Github
-        </Button>
+        <Link
+          target="_blank"
+          href="https://github.com/Zaidbhati10114/color-pallete-ai"
+        >
+          <Button variant={"outline"}>
+            <Github className="w-5 h-5 mr-1" />
+            Star on Github
+          </Button>
+        </Link>
         <Button variant={"default"}>Get Started</Button>
       </Row>
       <Row className="my-16 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-800 to-transparent" />

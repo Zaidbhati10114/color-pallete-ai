@@ -20,11 +20,14 @@ export default async function Footer() {
         </Row>
         <Row className="justify-end flex-col sm:flex-row items-center w-auto gap-4">
           <Span className="text-muted-foreground text-sm hover:underline">
-            <Link href="" target="_blank">
+            <Link
+              href="https://github.com/Zaidbhati10114/color-pallete-ai"
+              target="_blank"
+            >
               Developed By Zaid
             </Link>
           </Span>
-          <Link href={"https://twitter.com/enesozt_"}>
+          <Link target="_blank" href={"https://twitter.com/Zaidbhati4"}>
             <TwitterIcon className="stroke-muted-foreground hover:stroke-foreground" />
           </Link>
           <ModeToggle />

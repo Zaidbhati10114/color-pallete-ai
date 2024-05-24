@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Column } from "./ui/column";
 import { H1, P, Span } from "./ui/typography";
 import { Step } from "./step";
@@ -7,8 +7,9 @@ import { Row } from "./ui/row";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import SingleCard, { CardSkeleton } from "./SingleCard";
-import Spinner from "./Spinner";
 import toast from "react-hot-toast";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import Headsup from "./Headsup";
 
 const easySelections = [
   {
@@ -38,13 +39,17 @@ const Playground = () => {
   const [web, setWeb] = useState("");
   const [palettes, setPalettes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const handleClick = (title: string) => {
     setWeb(title);
   };
 
   const handleGeneratePalettes = async () => {
+    // Reset palettes and set isLoading to true
+    setPalettes([]); // Clear the existing palettes
     setIsLoading(true);
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -62,8 +67,15 @@ const Playground = () => {
       ).palettes;
       console.log(extractedPalettes);
       setPalettes(extractedPalettes);
+
+      if (extractedPalettes.length === 0) {
+        toast.error("No palettes found.");
+      }
     } catch (error) {
       console.error("Error fetching palettes:", error);
+      toast.error(
+        "Error generating palettes.Please Refresh the page and try again"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -71,9 +83,11 @@ const Playground = () => {
 
   console.log(palettes);
 
-  if (palettes === undefined) {
-    return toast.error("Error fetching palettes");
-  }
+  useEffect(() => {
+    if (palettes.length > 0 && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [palettes]);
 
   return (
     <React.Fragment>
@@ -121,11 +135,12 @@ const Playground = () => {
           </Column>
         </div>
       </div>
-      <h1 className="text-center font-medium text-2xl">
-        Color Pallets Will Generate below
-      </h1>
+      <p className="text-center font-medium text-2xl mt-4">
+        Color Pallets Will Generate Below
+      </p>
+      {/* Show skeletons only if palettes are being generated */}
       {isLoading && (
-        <div className="container mx-auto p-2">
+        <div ref={resultRef} className="container mx-auto p-2">
           <div className="flex flex-wrap justify-center gap-6">
             <CardSkeleton />
             <CardSkeleton />
@@ -133,13 +148,17 @@ const Playground = () => {
           </div>
         </div>
       )}
-      <div className="container mx-auto p-2">
-        <div className="flex flex-wrap justify-center gap-6">
-          <SingleCard pallete={palettes[0]} />
-          <SingleCard pallete={palettes[1]} />
-          <SingleCard pallete={palettes[2]} />
+      {/* Show palettes only if palettes are available */}
+      {palettes?.length > 0 && (
+        <div ref={resultRef} className="container mx-auto p-2">
+          <div className="flex flex-wrap justify-center gap-6">
+            <SingleCard pallete={palettes[0]} />
+            <SingleCard pallete={palettes[1]} />
+            <SingleCard pallete={palettes[2]} />
+          </div>
         </div>
-      </div>
+      )}
+      <Headsup />
     </React.Fragment>
   );
 };
