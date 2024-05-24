@@ -141,11 +141,3 @@ export const CardSkeleton = () => {
     </div>
   );
 };
-
-<Hint
-  label="Click to copy"
-  side="top"
-  align="center"
-  sideOffset={10}
-  alignOffset={10}
-></Hint>;
