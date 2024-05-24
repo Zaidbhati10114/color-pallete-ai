@@ -1,22 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
-} from '@google/generative-ai';
+} from "@google/generative-ai";
 
-const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY!;
 
 export async function POST(req: NextRequest) {
   if (!apiKey) {
-    return NextResponse.json({ error: 'API Key not found in environment variables' }, { status: 500 });
+    return NextResponse.json(
+      { error: "API Key not found in environment variables" },
+      { status: 500 }
+    );
   }
 
   try {
     const { message, chatHistory } = await req.json();
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash-latest',
+      model: "gemini-1.5-flash-latest",
     });
 
     const generationConfig = {
@@ -24,7 +27,7 @@ export async function POST(req: NextRequest) {
       topP: 0.95,
       topK: 64,
       maxOutputTokens: 8192,
-      responseMimeType: 'application/json',
+      responseMimeType: "application/json",
     };
 
     const safetySettings = [
@@ -56,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ response }, { status: 200 });
   } catch (error: any) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
