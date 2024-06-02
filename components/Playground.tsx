@@ -11,6 +11,16 @@ import toast from "react-hot-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import Headsup from "./Headsup";
 
+interface ColorTheme {
+  id: string;
+  colors: string[];
+}
+
+interface ChatHistory {
+  user: string;
+  bot: string;
+}
+
 const easySelections = [
   {
     websiteTitle: "Landing Page",
@@ -37,9 +47,12 @@ const easySelections = [
 
 const Playground = () => {
   const [web, setWeb] = useState("");
-  const [palettes, setPalettes] = useState<any[]>([]);
+  const [palettes, setPalettes] = useState<ColorTheme[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
+
+  const prompt = `Generate three color palettes for a ${web} website. Each palette should have four colors. Format the output as JSON, with each palette having an "id" and an array of "colors" in hex codes but without #.`;
 
   const handleClick = (title: string) => {
     setWeb(title);
@@ -47,17 +60,24 @@ const Playground = () => {
 
   const handleGeneratePalettes = async () => {
     // Reset palettes and set isLoading to true
-    setPalettes([]); // Clear the existing palettes
     setIsLoading(true);
+    setPalettes([]); // Clear the existing palettes
+
+    if (chatHistory.length > 0) {
+      // Clear chat history
+      setChatHistory([]);
+    }
+
+    const requestBody = {
+      message: prompt,
+      chatHistory: [],
+    };
 
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: `Generate three color palettes for a ${web} website. Each palette should have four colors. Format the output as JSON, with each palette having an "id" and an array of "colors" in hex codes but without #.`,
-          chatHistory: [],
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -67,15 +87,14 @@ const Playground = () => {
       ).palettes;
       console.log(extractedPalettes);
       setPalettes(extractedPalettes);
+      setChatHistory([...chatHistory, { user: prompt, bot: data }]);
 
       if (extractedPalettes.length === 0) {
         toast.error("No palettes found.");
       }
     } catch (error) {
       console.error("Error fetching palettes:", error);
-      toast.error(
-        "Error generating palettes.Please Refresh the page and try again"
-      );
+      toast.error("Server is busy. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +103,7 @@ const Playground = () => {
   console.log(palettes);
 
   useEffect(() => {
-    if (palettes.length > 0 && resultRef.current) {
+    if (palettes?.length > 0 && resultRef.current) {
       resultRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [palettes]);

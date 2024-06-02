@@ -1,13 +1,20 @@
+"use client";
 import Playground from "@/components/Playground";
 import { Button } from "@/components/ui/button";
 import { Column } from "@/components/ui/column";
 import { Row } from "@/components/ui/row";
-import { H1, H2, H3, H4, P, Span } from "@/components/ui/typography";
+import { H1, P } from "@/components/ui/typography";
 import { Github, List } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useRef } from "react";
 
 export default function Home() {
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  const getStarted = () => {
+    resultRef?.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <Column className="items-center pt-16 sm:pt-24 md:pt-36 pb-10 w-full max-w-4xl">
       <H1 className="scroll-m-20 text-3xl font-extrabold  tracking-tight">
@@ -31,10 +38,12 @@ export default function Home() {
             Star on Github
           </Button>
         </Link>
-        <Button variant={"default"}>Get Started</Button>
+        <Button onClick={() => getStarted()} variant={"default"}>
+          Get Started
+        </Button>
       </Row>
       <Row className="my-16 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-800 to-transparent" />
-      <Column className="gap-8 w-full">
+      <Column ref={resultRef} className="gap-8 w-full">
         <Playground />
       </Column>
     </Column>
