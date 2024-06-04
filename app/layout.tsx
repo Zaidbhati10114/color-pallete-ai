@@ -7,6 +7,7 @@ import { Column } from "@/components/ui/column";
 import Footer from "@/components/footer";
 import { Toaster } from "react-hot-toast";
 import TanstackProvider from "@/providers/TanstackProvider";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 const title = "Color Pallets AI";
@@ -46,6 +47,7 @@ export default function RootLayout({
             </div>
             <Footer />
             <Toaster />
+            <Analytics />
           </Column>
         </ThemeProvider>
       </body>
