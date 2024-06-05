@@ -25,7 +25,7 @@ const SingleCard: React.FC<SingleCardProps> = ({ pallete }) => {
   }
 
   return (
-    <div className="w-[250px] h-[200px] box-content rounded relative">
+    <div className="w-[250px] h-[200px] box-content rounded relative mb-10">
       <div className="grid grid-cols-1 rounded-t-lg text-white">
         <div
           style={{ backgroundColor: `#${pallete?.colors[0]}` }}

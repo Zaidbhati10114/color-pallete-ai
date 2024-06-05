@@ -8,8 +8,8 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import SingleCard, { CardSkeleton } from "./SingleCard";
 import toast from "react-hot-toast";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import Headsup from "./Headsup";
+import { LoadingSpinner } from "./Loading";
 
 interface ColorTheme {
   id: string;
@@ -19,6 +19,38 @@ interface ColorTheme {
 interface ChatHistory {
   user: string;
   bot: string;
+}
+
+interface ResponseContent {
+  text: string;
+}
+
+interface Candidate {
+  content: {
+    parts: ResponseContent[];
+    role: string;
+  };
+  finishReason: string;
+  index: number;
+  safetyRatings: SafetyRating[];
+}
+
+interface SafetyRating {
+  category: string;
+  probability: string;
+}
+
+interface ApiResponse {
+  response: {
+    response: {
+      candidates: Candidate[];
+      usageMetadata: {
+        promptTokenCount: number;
+        candidatesTokenCount: number;
+        totalTokenCount: number;
+      };
+    };
+  };
 }
 
 const easySelections = [
@@ -58,15 +90,14 @@ const Playground = () => {
     setWeb(title);
   };
 
-  const handleGeneratePalettes = async () => {
-    // Reset palettes and set isLoading to true
-    setIsLoading(true);
-    setPalettes([]); // Clear the existing palettes
+  // ... (previous code remains the same)
 
-    if (chatHistory.length > 0) {
-      // Clear chat history
-      setChatHistory([]);
-    }
+  // ... (previous code remains the same)
+
+  const handleGeneratePalettes = async () => {
+    setIsLoading(true);
+    setPalettes([]);
+    setChatHistory([]);
 
     const requestBody = {
       message: prompt,
@@ -80,14 +111,46 @@ const Playground = () => {
         body: JSON.stringify(requestBody),
       });
 
-      const data = await response.json();
-      console.log(data);
-      const extractedPalettes = JSON.parse(
-        data.response.response.candidates[0].content.parts[0].text
-      ).palettes;
-      console.log(extractedPalettes);
+      const data: ApiResponse = await response.json();
+      console.log("Received data:", data);
+
+      const rawText =
+        data.response.response.candidates[0].content.parts[0].text;
+      console.log("Raw text:", rawText);
+
+      const sanitizedText = rawText.trim();
+      console.log("Sanitized text:", sanitizedText);
+
+      let extractedPalettes = [];
+      const paletteRegex = /{.*?}/g;
+      const matches = sanitizedText.match(paletteRegex);
+
+      if (matches) {
+        extractedPalettes = matches
+          .map((match) => {
+            try {
+              return JSON.parse(match);
+            } catch (error) {
+              console.error("Error parsing palette:", error);
+              return null;
+            }
+          })
+          .filter((palette) => palette !== null);
+      }
+
+      console.log("Extracted palettes:", extractedPalettes);
+
+      if (!Array.isArray(extractedPalettes)) {
+        throw new Error("Unexpected data format: palettes is not an array.");
+      }
+
       setPalettes(extractedPalettes);
-      setChatHistory([...chatHistory, { user: prompt, bot: data }]);
+
+      const botResponseSummary = `Generated ${extractedPalettes.length} palettes.`;
+      setChatHistory([
+        ...chatHistory,
+        { user: prompt, bot: botResponseSummary },
+      ]);
 
       if (extractedPalettes.length === 0) {
         toast.error("No palettes found.");
@@ -100,8 +163,9 @@ const Playground = () => {
     }
   };
 
-  console.log(palettes);
+  // ... (remaining code remains the same)
 
+  // ... (remaining code remains the same)
   useEffect(() => {
     if (palettes?.length > 0 && resultRef.current) {
       resultRef.current.scrollIntoView({ behavior: "smooth" });
@@ -141,7 +205,6 @@ const Playground = () => {
       <div className="flex items-center w-full justify-center">
         <div className="w-full max-w-5xl mx-auto gap-2 md:gap-6 flex flex-col md:flex-row items-center md:items-start">
           <Column className="flex-col md:flex-row w-full flex items-start gap-4">
-            {/* Form */}
             <Textarea
               value={web}
               onChange={(e) => setWeb(e.target.value)}
@@ -149,15 +212,15 @@ const Playground = () => {
               placeholder="Enter your website details here"
             />
             <Button onClick={handleGeneratePalettes} className="mt-1">
-              Generate Pallets
+              {isLoading ? <LoadingSpinner /> : "Generate Pallets"}
             </Button>
           </Column>
         </div>
       </div>
+      <Headsup />
       <p className="text-center font-medium text-2xl mt-4">
         Color Pallets Will Generate Below
       </p>
-      {/* Show skeletons only if palettes are being generated */}
       {isLoading && (
         <div ref={resultRef} className="container mx-auto p-2">
           <div className="flex flex-wrap justify-center gap-6">
@@ -167,17 +230,15 @@ const Playground = () => {
           </div>
         </div>
       )}
-      {/* Show palettes only if palettes are available */}
       {palettes?.length > 0 && (
         <div ref={resultRef} className="container mx-auto p-2">
-          <div className="flex flex-wrap justify-center gap-6">
-            <SingleCard pallete={palettes[0]} />
-            <SingleCard pallete={palettes[1]} />
-            <SingleCard pallete={palettes[2]} />
+          <div className="flex flex-wrap justify-center  gap-9">
+            {palettes.map((palette) => (
+              <SingleCard key={palette.id} pallete={palette} />
+            ))}
           </div>
         </div>
       )}
-      <Headsup />
     </React.Fragment>
   );
 };
