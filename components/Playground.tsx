@@ -11,48 +11,6 @@ import toast from "react-hot-toast";
 import Headsup from "./Headsup";
 import { LoadingSpinner } from "./Loading";
 
-interface ColorTheme {
-  id: string;
-  colors: string[];
-}
-
-interface ChatHistory {
-  user: string;
-  bot: string;
-}
-
-interface ResponseContent {
-  text: string;
-}
-
-interface Candidate {
-  content: {
-    parts: ResponseContent[];
-    role: string;
-  };
-  finishReason: string;
-  index: number;
-  safetyRatings: SafetyRating[];
-}
-
-interface SafetyRating {
-  category: string;
-  probability: string;
-}
-
-interface ApiResponse {
-  response: {
-    response: {
-      candidates: Candidate[];
-      usageMetadata: {
-        promptTokenCount: number;
-        candidatesTokenCount: number;
-        totalTokenCount: number;
-      };
-    };
-  };
-}
-
 const easySelections = [
   {
     websiteTitle: "Landing Page",
@@ -89,10 +47,6 @@ const Playground = () => {
   const handleClick = (title: string) => {
     setWeb(title);
   };
-
-  // ... (previous code remains the same)
-
-  // ... (previous code remains the same)
 
   const handleGeneratePalettes = async () => {
     setIsLoading(true);
@@ -163,9 +117,6 @@ const Playground = () => {
     }
   };
 
-  // ... (remaining code remains the same)
-
-  // ... (remaining code remains the same)
   useEffect(() => {
     if (palettes?.length > 0 && resultRef.current) {
       resultRef.current.scrollIntoView({ behavior: "smooth" });
@@ -206,12 +157,17 @@ const Playground = () => {
         <div className="w-full max-w-5xl mx-auto gap-2 md:gap-6 flex flex-col md:flex-row items-center md:items-start">
           <Column className="flex-col md:flex-row w-full flex items-start gap-4">
             <Textarea
+              disabled={isLoading}
               value={web}
               onChange={(e) => setWeb(e.target.value)}
               className="flex-1 max-w-[780px] min-w-[150px]"
               placeholder="Enter your website details here"
             />
-            <Button onClick={handleGeneratePalettes} className="mt-1">
+            <Button
+              disabled={isLoading}
+              onClick={handleGeneratePalettes}
+              className="mt-1"
+            >
               {isLoading ? <LoadingSpinner /> : "Generate Pallets"}
             </Button>
           </Column>
